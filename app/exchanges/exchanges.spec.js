@@ -1,5 +1,3 @@
-'use strict'
-
 const exchanges = require('./exchanges')
 const expect = require('chai').expect
 
