@@ -10,6 +10,7 @@
 
 Creating the project:
 - Genrate project: http://expressjs.com/en/starter/generator.html
+- Initialize repo
 - Add gitignore: https://github.com/github/gitignore/blob/master/Node.gitignore
 - Add README
 - Run `npm install`
