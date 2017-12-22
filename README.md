@@ -13,3 +13,6 @@ Creating the project:
 - Add gitignore: https://github.com/github/gitignore/blob/master/Node.gitignore
 - Add README
 - Run `npm install`
+
+Structuring the project:
+- There's no consensus (e.g. [1](https://www.infoworld.com/article/3204205/node-js/7-keys-to-structuring-your-nodejs-app.html), [2](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/)) but it doesn't matter from the framework point of view. I've decided to structure the project as described [here](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/). The main idea (similar to [Angular's generator](https://github.com/angular/angular-cli#generating-components-directives-pipes-and-services)) is to organize around features, not roles. Additionally I will store the business logic in an `app` folder.
