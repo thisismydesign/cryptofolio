@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
-var exchanges = require('./app/exchanges/index')
+var exchanges = require('./app/exchanges')
 app.use('/api/exchanges', exchanges.router)
 
 // catch 404 and forward to error handler
