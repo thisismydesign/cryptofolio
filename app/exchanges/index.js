@@ -1,4 +1,4 @@
-var exchanges = require('./exchanges')
+const exchanges = require('./exchanges')
 
 module.exports = {
 	router: exchanges.router
