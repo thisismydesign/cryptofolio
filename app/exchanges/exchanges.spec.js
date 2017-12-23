@@ -14,6 +14,10 @@ describe('exchanges module', () => {
 				agent
 			        .get('/api/exchanges')
 			        .expect(200, function (err, res) {
+			        	if (err) {
+			        		console.log(err)
+			        		throw(err)
+			        	}
 				        expect(res.body).to.eql(['bittrex', 'coinbase'])
 				        done()
 				      })
