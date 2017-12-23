@@ -21,3 +21,4 @@ Structuring the project:
 Technical notes:
 
 - In order for `sinon` stubbing to work the stubbed method cannot be used in the same module. In other words stubbing a module endpoint will only stub the module endpoint and not the internal usage of the method referenced upon `module.exports`. See more [here](https://stackoverflow.com/a/47949094/2771889).
+- Using comments in the `package.json` file as described [here](https://stackoverflow.com/a/14221781/2771889).
