@@ -9,7 +9,7 @@ router.get('/:name/assets', function(req, res) {
 })
 
 function list(exchange) {
-	return crypto_exchange[exchange].assets()
+	return crypto_exchange[exchange]().assets()
 }
 
 module.exports = {
