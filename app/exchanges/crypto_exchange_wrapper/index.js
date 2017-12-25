@@ -1,21 +1,9 @@
 // Decided to go with a wrapper to ease testing
 
-const crypto_exchange = require('crypto-exchange')
-
-function pairs(exchange) {
-	return crypto_exchange[exchange].pairs()
-}
-
-function assets(exchange) {
-	return crypto_exchange[exchange].assets()
-}
-
-function exchanges() {
-	return Object.keys(crypto_exchange)
-}
+const crypto_exchange_wrapper = require('./crypto_exchange_wrapper')
 
 module.exports = {
-	pairs: pairs,
-	assets: assets,
-	exchanges: exchanges
+	pairs: crypto_exchange_wrapper.pairs,
+	assets: crypto_exchange_wrapper.assets,
+	exchanges: crypto_exchange_wrapper.exchanges
 }
