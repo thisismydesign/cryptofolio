@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+const sandbox = require('sinon').createSandbox()
 const expect = require('chai').expect
 
 const crypto_exchange_wrapper = require('./crypto_exchange_wrapper')
@@ -14,9 +14,13 @@ describe('exchanges module', () => {
 				exchange_list = ['bittrex', 'coinbase']
 				app = require('supertest').agent(require('../../app'))
 
-				sinon.stub(crypto_exchange_wrapper, 'exchanges').callsFake(() =>  {
+				sandbox.stub(crypto_exchange_wrapper, 'exchanges').callsFake(() =>  {
 					return exchange_list
 				})
+			})
+
+			after(() => {
+				sandbox.restore()
 			})
 
 			it('responds with a list of exchanges', function(done) {

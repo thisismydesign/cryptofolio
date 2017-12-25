@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+const sandbox = require('sinon').createSandbox()
 const expect = require('chai').expect
 
 const crypto_exchange_wrapper = require('../crypto_exchange_wrapper')
@@ -24,12 +24,16 @@ describe('balances module', () => {
 								}
 				app = require('supertest').agent(require('../../../app'))
 
-				sinon.stub(crypto_exchange_wrapper, 'authenticate').callsFake(() => null)
-				sinon.stub(crypto_exchange_wrapper, 'balances').callsFake(() =>  {
+				sandbox.stub(crypto_exchange_wrapper, 'authenticate').callsFake(() => null)
+				sandbox.stub(crypto_exchange_wrapper, 'balances').callsFake(() =>  {
 					return new Promise((resolve, reject) => {
 				    	resolve(balance_list)
 				    })
 				})
+			})
+
+			after(() => {
+				sandbox.restore()
 			})
 
 			it('responds with a list of balances for given exchange user', function(done) {

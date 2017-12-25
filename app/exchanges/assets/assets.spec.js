@@ -1,4 +1,4 @@
-const sinon = require('sinon')
+const sandbox = require('sinon').createSandbox()
 const expect = require('chai').expect
 
 const crypto_exchange_wrapper = require('../crypto_exchange_wrapper')
@@ -10,16 +10,19 @@ describe('assets module', () => {
 			expect(assets.router).to.be.a('function')
 		}),
 		describe('GET /:name/assets', () => {
-
 			before(() => {
 				asset_list = ["BTC", "LTC"]
 				app = require('supertest').agent(require('../../../app'))
 
-				sinon.stub(crypto_exchange_wrapper, 'assets').callsFake(() =>  {
+				sandbox.stub(crypto_exchange_wrapper, 'assets').callsFake(() =>  {
 					return new Promise((resolve, reject) => {
 				    	resolve(asset_list)
 				    })
 				})
+			})
+
+			after(() => {
+				sandbox.restore()
 			})
 
 			it('responds with a list of assets for given exchange', function(done) {
