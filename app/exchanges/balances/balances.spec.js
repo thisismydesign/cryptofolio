@@ -11,13 +11,23 @@ describe('balances module', () => {
 		}),
 		describe('GET /:name/balances/:key/:secret', () => {
 			before(() => {
-				balance_list = ["BTC", "LTC"]
+				balance_list = {"BTC": {
+								    "balance": 0.08126211,
+								    "available": 0.08126211,
+								    "pending": 0
+								  },
+								  "LTC" : {
+								  	"balance": 2500,
+								    "available": 2500,
+								    "pending": 0
+								  }
+								}
 				app = require('supertest').agent(require('../../../app'))
 
 				sinon.stub(crypto_exchange_wrapper, 'authenticate').callsFake(() => null)
 				sinon.stub(crypto_exchange_wrapper, 'balances').callsFake(() =>  {
 					return new Promise((resolve, reject) => {
-				    	resolve(asset_list)
+				    	resolve(balance_list)
 				    })
 				})
 			})
@@ -29,7 +39,32 @@ describe('balances module', () => {
 			        		console.log(res)
 			        		throw(err)
 			        	}
-				        expect(res.body).to.eql(asset_list)
+				        expect(res.body).to.eql(balance_list)
+				        done()
+				      })
+	    	})
+
+	    	it('filters empty balances', function(done) {
+	    		balance_list = {"BTC": {
+								    "balance": 0.08126211,
+								    "available": 0.08126211,
+								    "pending": 0
+								  },
+								  "ETH" : {
+								  	"balance": 0,
+								    "available": 0,
+								    "pending": 0
+								  }
+								}
+				filtered_balance_list = balance_list
+				delete filtered_balance_list['ETH']
+				app.get('/api/exchanges/bittrex/balances/abc/123')
+		        	.expect(200, function (err, res) {
+			        	if (err) {
+			        		console.log(res)
+			        		throw(err)
+			        	}
+				        expect(res.body).to.eql(filtered_balance_list)
 				        done()
 				      })
 	    	})
