@@ -1,7 +1,7 @@
 const proxyquire =  require('proxyquire')
 const sinon = require('sinon')
 
-const exchnage_stub = sinon.stub()
+const exchange_stub = sinon.stub()
 const crypto_exchange_stub = {}
 
 const assets = proxyquire('./assets', { 'crypto-exchange': crypto_exchange_stub })
@@ -16,12 +16,12 @@ describe('assets module', () => {
 
 			before(() => {
 				asset_list = ["BTC", "LTC"]
-				exchnage_stub.assets = () =>  {
+				exchange_stub.assets = () =>  {
 					return new Promise((resolve, reject) => {
 				    	resolve(asset_list)
 				    })
 				}
-				crypto_exchange_stub.bittrex = () => { return exchnage_stub }
+				crypto_exchange_stub.bittrex = () => { return exchange_stub }
 				app = require('supertest').agent(require('../../../app'))
 			})
 
