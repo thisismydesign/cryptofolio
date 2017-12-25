@@ -1,15 +1,8 @@
-const proxyquire =  require('proxyquire').noCallThru()
+const proxyquire =  require('proxyquire')
 const sinon = require('sinon')
 
-var exchnage_stub = sinon.stub()
-exchnage_stub.assets = () =>  {
-	return new Promise((resolve, reject) => {
-    	resolve(["BTC","LTC"])
-    })
-}
-
-let crypto_exchange_stub = {}
-crypto_exchange_stub.bittrex = () => { return exchnage_stub }
+const exchnage_stub = sinon.stub()
+const crypto_exchange_stub = {}
 
 const assets = proxyquire('./assets', { 'crypto-exchange': crypto_exchange_stub })
 const expect = require('chai').expect
@@ -20,16 +13,26 @@ describe('assets module', () => {
 			expect(assets.router).to.be.a('function')
 		}),
 		describe('GET /:name/assets', () => {
+
+			before(() => {
+				asset_list = ["BTC", "LTC"]
+				exchnage_stub.assets = () =>  {
+					return new Promise((resolve, reject) => {
+				    	resolve(asset_list)
+				    })
+				}
+				crypto_exchange_stub.bittrex = () => { return exchnage_stub }
+				app = require('supertest').agent(require('../../../app'))
+			})
+
 			it('responds with a list of assets for given exchange', function(done) {
-				const agent = require('supertest').agent(require('../../../app'))
-				agent
-			        .get('/api/exchanges/bittrex/assets')
-			        .expect(200, function (err, res) {
+				app.get('/api/exchanges/bittrex/assets')
+		        	.expect(200, function (err, res) {
 			        	if (err) {
 			        		console.log(res)
 			        		throw(err)
 			        	}
-				        expect(res.body).to.eql(["BTC","LTC"])
+				        expect(res.body).to.eql(asset_list)
 				        done()
 				      })
 	    	})
