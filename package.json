@@ -16,11 +16,18 @@
     "pug": "2.0.0-beta11",
     "serve-favicon": "~2.4.5"
   },
+  "//devDependencies": {
+    "chai":         "Assertions",
+    "mocha":        "Unit testing framwork",
+    "proxyquire":   "Overriding dependencies for testing",
+    "sinon":        "Spies, Stubs, Mocks",
+    "supertest":    "Test requests"
+  },
   "devDependencies": {
-    "chai": "^4.1.2",             "//" : "Assertions",
-    "mocha": "^4.0.1",            "//" : "Unit testing framwoek",
-    "proxyquire": "^1.8.0",       "//" : "Overriding dependencies for testing",
-    "sinon": "^4.1.3",            "//" : "Spies, Stubs, Mocks",
-    "supertest": "^3.0.0",        "//" : "Test requests"
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.1.3",
+    "supertest": "^3.0.0"
   }
 }
