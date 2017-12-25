@@ -11,14 +11,15 @@ describe('converted_balances module', () => {
 		}),
 		describe('GET /:name/balances/:key/:secret/:currency', () => {
 			before(() => {
+				target_currency = 'USDT'
 				balance_list = {"BTC": {
 								    "balance": 0.08126211,
 								    "available": 0.08126211,
 								    "pending": 0
 								}}
-				pair_list = ["BTC_USDT", "LTC_USDT"]
+				pair_list = [`BTC_${target_currency}`, `LTC_${target_currency}`]
 				expected_balance_list = balance_list
-				expected_balance_list['BTC']['to_USDT_pair'] = 'BTC_USDT'
+				expected_balance_list['BTC'][`to_${target_currency}_pair`] = `BTC_${target_currency}`
 
 				app = require('supertest').agent(require('../../../app'))
 
@@ -40,7 +41,7 @@ describe('converted_balances module', () => {
 			})
 
 			it('responds with a list of converted_balances for given exchange', function(done) {
-				app.get('/api/exchanges/bittrex/balances/abc/123/USDT')
+				app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
 		        	.expect(200, function (err, res) {
 			        	if (err) {
 			        		console.log(res)
