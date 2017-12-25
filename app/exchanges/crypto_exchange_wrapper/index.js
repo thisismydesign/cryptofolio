@@ -10,7 +10,12 @@ function assets(exchange) {
 	return crypto_exchange[exchange].assets()
 }
 
+function exchanges() {
+	return Object.keys(crypto_exchange)
+}
+
 module.exports = {
 	pairs: pairs,
-	assets: assets
+	assets: assets,
+	exchanges: exchanges
 }

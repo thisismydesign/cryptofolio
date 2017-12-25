@@ -1,6 +1,7 @@
-const crypto_exchange = require('crypto-exchange')
 const express = require('express')
 const router = express.Router()
+
+const crypto_exchange = require('./crypto_exchange_wrapper')
 const assets = require('./assets')
 const pairs = require('./pairs')
 
@@ -11,7 +12,7 @@ router.use('/', assets.router)
 router.use('/', pairs.router)
 
 function list() {
-	return Object.keys(crypto_exchange)
+	return crypto_exchange.exchanges()
 }
 
 module.exports = {
