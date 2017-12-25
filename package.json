@@ -6,6 +6,9 @@
     "start": "node ./bin/www",
     "test": "mocha './app/**/*.spec.js'"
   },
+  "//dependencies": {
+    "crypto-exchange":  "Unified exchange API"
+  },
   "dependencies": {
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
@@ -17,11 +20,11 @@
     "serve-favicon": "~2.4.5"
   },
   "//devDependencies": {
-    "chai":         "Assertions",
-    "mocha":        "Unit testing framwork",
-    "proxyquire":   "Overriding dependencies for testing",
-    "sinon":        "Spies, Stubs, Mocks",
-    "supertest":    "Test requests"
+    "chai":             "Assertions",
+    "mocha":            "Unit testing framwork",
+    "proxyquire":       "Overriding dependencies for testing",
+    "sinon":            "Spies, Stubs, Mocks",
+    "supertest":        "Test requests"
   },
   "devDependencies": {
     "chai": "^4.1.2",
