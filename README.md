@@ -1,5 +1,10 @@
 # cryptofolio
 
+Do this:
+
+- `npm install`
+- `npm start`
+
 ## JS framework for dummies
 
 - [Node.js](https://nodejs.org/en/): JavaScript framework
