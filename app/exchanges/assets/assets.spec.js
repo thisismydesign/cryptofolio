@@ -21,7 +21,7 @@ describe('assets module', () => {
 				    	resolve(asset_list)
 				    })
 				}
-				crypto_exchange_stub.bittrex = () => { return exchange_stub }
+				crypto_exchange_stub.bittrex = exchange_stub
 				app = require('supertest').agent(require('../../../app'))
 			})
 
