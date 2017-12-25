@@ -1,11 +1,8 @@
-const proxyquire =  require('proxyquire')
 const sinon = require('sinon')
-
-const exchange_stub = sinon.stub()
-const crypto_exchange_stub = {}
-
-const assets = proxyquire('./assets', { 'crypto-exchange': crypto_exchange_stub })
 const expect = require('chai').expect
+
+const crypto_exchange_wrapper = require('../crypto_exchange_wrapper')
+const assets = require('./assets')
 
 describe('assets module', () => {
 	describe('router', () => {
@@ -16,13 +13,13 @@ describe('assets module', () => {
 
 			before(() => {
 				asset_list = ["BTC", "LTC"]
-				exchange_stub.assets = () =>  {
+				app = require('supertest').agent(require('../../../app'))
+
+				sinon.stub(crypto_exchange_wrapper, 'assets').callsFake(() =>  {
 					return new Promise((resolve, reject) => {
 				    	resolve(asset_list)
 				    })
-				}
-				crypto_exchange_stub.bittrex = exchange_stub
-				app = require('supertest').agent(require('../../../app'))
+				})
 			})
 
 			it('responds with a list of assets for given exchange', function(done) {
