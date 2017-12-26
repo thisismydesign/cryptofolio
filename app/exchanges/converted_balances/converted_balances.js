@@ -17,39 +17,15 @@ function list(exchange, key, secret, to_currency) {
 		promises = []
 
 		Object.keys(balance_list).map(function(currency, index) {
-			balance_list[currency]['conversion_pairs'] = []
-			balance_list[currency]['value'] = balance_list[currency]['balance']
+			conversion_pairs = find_conversion_pairs(pair_list, currency, to_currency)
+			if (conversion_pairs) {
+				balance_list[currency]['conversion_pairs'] = []
+				balance_list[currency]['value'] = balance_list[currency]['balance']
 
-			// e.g. from: USDT to: USDT
-			if(currency === to_currency) return
-
-			// e.g. from: BTC to: USDT, pair: BTC_USDT
-			pair = find_pair(pair_list, currency, to_currency)
-			if (pair) {
-				promises.push(convert_entry(exchange, pair, currency, balance_list))
-				return
+				conversion_pairs.forEach(pair => {
+					promises.push(convert_entry(exchange, pair[0], currency, balance_list, pair[1]))
+				})
 			}
-
-			// e.g. from: USDT to: BTC, pair: BTC_USDT
-			pair = find_pair(pair_list, to_currency, currency)
-			if (pair) {
-				promises.push(convert_entry(exchange, pair, currency, balance_list, false))
-				return
-			}
-
-			// e.g. from: XVG to: USDT, pairs: XVG_BTC, BTC_USDT
-			intermediate_currency = 'BTC'
-			intermediate_pair = find_pair(pair_list, currency, intermediate_currency)
-			pair = find_pair(pair_list, intermediate_currency, to_currency)
-			if (intermediate_pair && pair) {
-				promises.push(convert_entry(exchange, intermediate_pair, currency, balance_list))
-				promises.push(convert_entry(exchange, pair, currency, balance_list))
-				return
-			}
-
-			console.log(`No pairs found to change from ${currency} to ${to_currency}`)
-			delete balance_list[currency]['value']
-			delete balance_list[currency]['conversion_pairs']
 		})
 
 		return Promise.all(promises).then(() => { return balance_list })
@@ -57,24 +33,43 @@ function list(exchange, key, secret, to_currency) {
 }
 
 function convert_entry(exchange, pair, start_currency, balance_list, direction = true) {
-	// pair = find_pair(pair_list, from_currency, to_currency)
-	// if (pair) {
-		promise = convert(exchange, pair).then(result => {
-			if (direction) {
-				return balance_list[start_currency]['value'] *= result
-			} else {
-				return balance_list[start_currency]['value'] /= result
-			}
-		})
-		balance_list[start_currency]['conversion_pairs'].push(pair)
-		return promise
-	// }
+	promise = convert(exchange, pair).then(result => {
+		if (direction) {
+			return balance_list[start_currency]['value'] *= result
+		} else {
+			return balance_list[start_currency]['value'] /= result
+		}
+	})
+	balance_list[start_currency]['conversion_pairs'].push(pair)
+	return promise
 }
 
 function convert(exchange, pair) {
 	return ticker.last_value(exchange, pair).then(result => {
 		return result
 	})
+}
+
+function find_conversion_pairs(pairs, from_currency, to_currency) {
+	intermediate_currency = 'BTC'
+
+	// e.g. from: USDT to: USDT
+	if(from_currency === to_currency) return []
+
+	// e.g. from: BTC to: USDT, pair: BTC_USDT
+	pair = find_pair(pairs, from_currency, to_currency)
+	if (pair) return [[pair, true]]
+
+	// e.g. from: USDT to: BTC, pair: BTC_USDT
+	reverse_pair = find_pair(pairs, to_currency, from_currency)
+	if (reverse_pair) return [[reverse_pair, false]]
+
+	// e.g. from: XVG to: USDT, pairs: XVG_BTC, BTC_USDT
+	intermediate_pair = find_pair(pairs, from_currency, intermediate_currency)
+	pair = find_pair(pairs, intermediate_currency, to_currency)
+	if (intermediate_pair && pair) return [[intermediate_pair, true], [pair, true]]
+
+	console.log(`No pairs found to change from ${from_currency} to ${to_currency}`)
 }
 
 function find_pair(pairs, from_currency, to_currency) {
