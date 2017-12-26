@@ -20,42 +20,40 @@ function list(exchange, key, secret, to_currency) {
 			balance_list[currency]['conversion_pairs'] = []
 			balance_list[currency]['value'] = balance_list[currency]['balance']
 
+			// e.g. from: USDT to: USDT
 			if(currency === to_currency) return
 
+			// e.g. from: BTC to: USDT, pair: BTC_USDT
 			convert_promise = convert_entry(exchange, pair_list, currency, currency, to_currency, balance_list)
-
 			if (convert_promise) {
 				promises.push(convert_promise)
-			} else {
-				// Check if we can change the other way around (e.g. there's no USDT_BTC pair)
-				reverted_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list)
-				if (reverted_promise) {
-					convert_promise = reverted_promise.then(result => {
-						conversion_rate = balance_list[currency]['balance'] / result
-						balance_list[currency]['value'] = balance_list[currency]['balance'] * conversion_rate
-					})
-					promises.push(convert_promise)
-					return
-				}
-				
-
-				// Change through intermediate currency
-				intermediate_currency = 'BTC'
-
-				intermediate_promise = convert_entry(exchange, pair_list, currency, currency, intermediate_currency, balance_list)
-
-				if (!intermediate_promise) {
-					console.log(`No pairs found to change from ${currency} to ${to_currency}`)
-					balance_list[currency]['value'] = 0
-					return
-				}
-				promises.push(intermediate_promise)
-
-				convert_promise = convert_entry(exchange, pair_list, currency, intermediate_currency, to_currency, balance_list)
-				promises.push(convert_promise)
-
-				console.log(`Cannot change from ${currency} to ${to_currency} directly, will do it through ${balance_list[currency][`to_${to_currency}_pairs`]}`)
+				return
 			}
+
+			// e.g. from: USDT to: BTC, pair: BTC_USDT
+			reverted_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list)
+			if (reverted_promise) {
+				convert_promise = reverted_promise.then(result => {
+					conversion_rate = balance_list[currency]['balance'] / result
+					balance_list[currency]['value'] = balance_list[currency]['balance'] * conversion_rate
+				})
+				promises.push(convert_promise)
+				return
+			}
+			
+			// e.g. from: XVG to: USDT, pairs: XVG_BTC, BTC_USDT
+			intermediate_currency = 'BTC'
+			intermediate_promise = convert_entry(exchange, pair_list, currency, currency, intermediate_currency, balance_list)
+			if (!intermediate_promise) {
+				console.log(`No pairs found to change from ${currency} to ${to_currency}`)
+				delete balance_list[currency]['value']
+				delete balance_list[currency]['conversion_pairs']
+				return
+			}
+			promises.push(intermediate_promise)
+
+			convert_promise = convert_entry(exchange, pair_list, currency, intermediate_currency, to_currency, balance_list)
+			promises.push(convert_promise)
 		})
 
 		return Promise.all(promises).then(() => { return balance_list })
