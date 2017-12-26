@@ -63,7 +63,7 @@ describe('converted_balances module', () => {
 				      })
 	    	})
 
-	    	describe('one way pair (e.g. USDT_BTC)', () => {
+	    	describe('one way pair (e.g. looking for USDT_BTC but there is only BTC_USDT)', () => {
 	    		before(() => {
 	    			target_currency = 'BTC'
 	    			balance_list = {"USDT": {"balance": 3000}}
@@ -74,6 +74,29 @@ describe('converted_balances module', () => {
 	    		})
 
 	    		it('uses the revert pair to to convert', function(done) {
+					app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
+			        	.expect(200, function (err, res) {
+				        	if (err) {
+				        		console.log(res)
+				        		throw(err)
+				        	}
+					        expect(res.body).to.eql(expected_balance_list)
+					        done()
+					      })
+    			})
+	    	})
+
+	    	describe('no conversion needed (e.g. USDT_USDT)', () => {
+	    		before(() => {
+	    			target_currency = 'USDT'
+	    			balance_list = {"USDT": {"balance": 3000}}
+
+	    			expected_balance_list = JSON.parse(JSON.stringify(balance_list))
+					expected_balance_list['USDT']['conversion_pairs'] = []
+					expected_balance_list['USDT']['value'] = 3000
+	    		})
+
+	    		it('uses the balance as value', function(done) {
 					app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
 			        	.expect(200, function (err, res) {
 				        	if (err) {
