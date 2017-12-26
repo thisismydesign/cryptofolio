@@ -31,11 +31,6 @@ function list(exchange, key, secret, to_currency) {
 	})
 }
 
-function to_usd_pair(pairs, currency) {
-  pair = find_pair(pairs, currency, 'USD') || find_pair(pairs, currency, 'USDT')
-  return pair
-}
-
 function find_pair(pairs, from_currency, to_currency) {
   for (var i in pairs) {
     pair = pairs[i].split('_')
