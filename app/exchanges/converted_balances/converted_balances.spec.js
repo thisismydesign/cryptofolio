@@ -56,7 +56,7 @@ describe('converted_balances module', () => {
 				sandbox.restore()
 			})
 
-			it('responds with a list of balances for given exchange user including value conversion pairs for desired currency', function(done) {
+			it('responds with a list of balances for given exchange user including conversion pairs for and value in desired currency', function(done) {
 				app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
 		        	.expect(200, function (err, res) {
 			        	if (err) {
