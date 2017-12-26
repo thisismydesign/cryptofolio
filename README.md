@@ -16,7 +16,7 @@
         ✓ responds with a list of balances for given exchange user
 --
       GET /:name/balances/:key/:secret/:currency
-        ✓ responds with a list of balances for given exchange user including value conversion pairs for desired currency
+        ✓ responds with a list of balances for given exchange user including conversion pairs for and value in desired currency
 --
       GET /
         ✓ responds with a list of exchanges
