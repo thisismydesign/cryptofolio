@@ -74,5 +74,7 @@ function find_pair(pairs, from_currency, to_currency) {
 }
 
 module.exports = {
-	router: router
+	router: router,
+	convert: convert,
+	find_conversion_pairs: find_conversion_pairs
 }
