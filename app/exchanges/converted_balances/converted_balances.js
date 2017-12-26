@@ -3,7 +3,6 @@ const router = express.Router()
 
 const balances = require('../balances')
 const pairs = require('../pairs')
-const ticker = require('../ticker')
 const exchange_rate = require('../exchange_rate')
 
 router.get('/:name/balances/:key/:secret/:currency', function(req, res) {

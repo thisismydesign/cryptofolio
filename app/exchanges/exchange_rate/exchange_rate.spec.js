@@ -16,11 +16,11 @@ describe('exchange_rate module', () => {
 			beforeEach(() => {
 				app = require('supertest').agent(require('../../../app'))
 
-				sandbox.stub(crypto_exchange_wrapper, 'pairs').callsFake(() =>  {
-					return new Promise((resolve, reject) => {
+				sandbox.stub(crypto_exchange_wrapper, 'pairs').returns(
+					new Promise((resolve, reject) => {
 				    	resolve(pairs)
 				    })
-				})
+				)
 				ticker_stub = sandbox.stub(crypto_exchange_wrapper, 'ticker')
 				pairs && pairs.forEach((pair, index) => {
 					ticker_stub.withArgs('bittrex', pair).returns(
