@@ -21,7 +21,6 @@ function list(exchange, key, secret, to_currency) {
 			if (pair) {
 				balance_list[from_currency][`to_${to_currency}_pair`] = pair
 				promise = ticker.last_value(exchange, pair).then(result => {
-					console.log(result)
 					balance_list[from_currency][`${to_currency}_value`] = result
 				})
 				promises.push(promise)
