@@ -31,12 +31,8 @@ function list(exchange, key, secret, to_currency) {
 			}
 
 			// e.g. from: USDT to: BTC, pair: BTC_USDT
-			reverted_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list)
-			if (reverted_promise) {
-				convert_promise = reverted_promise.then(result => {
-					conversion_rate = balance_list[currency]['balance'] / result
-					balance_list[currency]['value'] = balance_list[currency]['balance'] * conversion_rate
-				})
+			convert_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list, false)
+			if (convert_promise) {
 				promises.push(convert_promise)
 				return
 			}
@@ -60,11 +56,15 @@ function list(exchange, key, secret, to_currency) {
 	})
 }
 
-function convert_entry(exchange, pair_list, start_currency, from_currency, to_currency, balance_list) {
+function convert_entry(exchange, pair_list, start_currency, from_currency, to_currency, balance_list, direction = true) {
 	pair = find_pair(pair_list, from_currency, to_currency)
 	if (pair) {
 		promise = convert(exchange, pair).then(result => {
-			return balance_list[start_currency]['value'] *= result
+			if (direction) {
+				return balance_list[start_currency]['value'] *= result
+			} else {
+				return balance_list[start_currency]['value'] /= result
+			}
 		})
 		balance_list[start_currency]['conversion_pairs'].push(pair)
 		return promise
