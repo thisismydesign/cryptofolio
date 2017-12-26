@@ -16,12 +16,12 @@ function list(exchange, key, secret, to_currency) {
 	return Promise.all([pairs.list(exchange), balances.list(exchange, key, secret)]).then(([pair_list, balance_list]) => {
 		promises = []
 
-		Object.keys(balance_list).map(function(from_currency, index) {
-			pair = find_pair(pair_list, from_currency, to_currency)
+		Object.keys(balance_list).map(function(currency, index) {
+			pair = find_pair(pair_list, currency, to_currency)
 			if (pair) {
-				balance_list[from_currency][`to_${to_currency}_pair`] = pair
+				balance_list[currency][`to_${to_currency}_pair`] = pair
 				promise = ticker.last_value(exchange, pair).then(result => {
-					balance_list[from_currency][`${to_currency}_value`] = result
+					balance_list[currency][`${to_currency}_value`] = result
 				})
 				promises.push(promise)
 			}
