@@ -142,6 +142,29 @@ describe('converted_balances module', () => {
 					      })
     			})
 	    	})
+
+	    	describe('no conversion possible (e.g. GRS_USDT with no intermediate pair)', () => {
+	    		before(() => {
+	    			target_currency = 'USDT'
+	    			balance_list = {"GRS": {"balance": 3000}}
+
+	    			expected_balance_list = deep_clone(balance_list)
+	    		})
+
+	    		it('uses the balance as value', function(done) {
+					app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
+			        	.expect(200, function (err, res) {
+				        	if (err) {
+				        		console.log(res)
+				        		throw(err)
+				        	}
+					        expect(res.body).to.eql(expected_balance_list)
+					        expect(res.body['GRS']).to.not.have.property('conversion_pairs')
+					        expect(res.body['GRS']).to.not.have.property('value')
+					        done()
+					      })
+    			})
+	    	})
 		})
 	})
 })
