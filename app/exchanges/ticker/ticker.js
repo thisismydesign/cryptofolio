@@ -13,6 +13,12 @@ function value(exchange, pair) {
 	return crypto_exchange_wrapper.ticker(exchange, pair)
 }
 
+function last_value(exchange, pair) {
+	return crypto_exchange_wrapper.ticker(exchange, pair).then(ticker => { return ticker[pair]['last'] })
+}
+
 module.exports = {
-	router: router
+	router: router,
+	value: value,
+	last_value: last_value
 }

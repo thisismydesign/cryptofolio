@@ -12,14 +12,13 @@ describe('converted_balances module', () => {
 		describe('GET /:name/balances/:key/:secret/:currency', () => {
 			before(() => {
 				target_currency = 'USDT'
-				balance_list = {"BTC": {
-								    "balance": 0.08126211,
-								    "available": 0.08126211,
-								    "pending": 0
-								}}
+				balance_list = {"BTC": {"balance": 0.08126211}}
+				ticker_value = {"BTC_USDT" : {"last": 13669.00000004}}
 				pair_list = [`BTC_${target_currency}`, `LTC_${target_currency}`]
+
 				expected_balance_list = balance_list
 				expected_balance_list['BTC'][`to_${target_currency}_pair`] = `BTC_${target_currency}`
+				expected_balance_list['BTC'][`${target_currency}_value`] = ticker_value[`BTC_${target_currency}`]['last']
 
 				app = require('supertest').agent(require('../../../app'))
 
@@ -34,13 +33,18 @@ describe('converted_balances module', () => {
 				    	resolve(pair_list)
 				    })
 				})
+				sandbox.stub(crypto_exchange_wrapper, 'ticker').callsFake(() =>  {
+					return new Promise((resolve, reject) => {
+				    	resolve(ticker_value)
+				    })
+				})
 			})
 
 			after(() => {
 				sandbox.restore()
 			})
 
-			it('responds with a list of converted_balances for given exchange', function(done) {
+			it('responds with a list of balances for given exchange user including value and ticker of desired currency', function(done) {
 				app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
 		        	.expect(200, function (err, res) {
 			        	if (err) {
