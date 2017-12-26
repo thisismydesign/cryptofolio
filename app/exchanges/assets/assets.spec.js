@@ -1,3 +1,5 @@
+process.env.NODE_ENV = 'test'
+
 const sandbox = require('sinon').createSandbox()
 const expect = require('chai').expect
 
