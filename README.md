@@ -50,3 +50,11 @@ Technical notes:
 
 - In order for `sinon` stubbing to work the stubbed method cannot be used in the same module. In other words stubbing a module endpoint will only stub the module endpoint and not the internal usage of the method referenced upon `module.exports`. See more [here](https://stackoverflow.com/a/47949094/2771889).
 - Using comments in the `package.json` file as described [here](https://stackoverflow.com/a/14221781/2771889).
+
+Guides:
+- http://taoofcode.net/promise-anti-patterns/
+- https://www.codementor.io/mattgoldspink/nodejs-best-practices-du1086jja
+- https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/
+- https://blog.risingstack.com/node-hero-node-js-unit-testing-tutorial/
+- https://blog.risingstack.com/getting-node-js-testing-and-tdd-right-node-js-at-scale/
+- https://blog.risingstack.com/node-js-project-structure-tutorial-node-js-at-scale/
