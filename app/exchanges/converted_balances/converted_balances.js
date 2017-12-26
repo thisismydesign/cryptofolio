@@ -24,10 +24,10 @@ function list(exchange, key, secret, to_currency) {
 
 			pair = find_pair(pair_list, currency, to_currency)
 			if (pair) {
-				balance_list[currency][`to_${to_currency}_pairs`].push(pair)
-				promise = ticker.last_value(exchange, pair).then(result => {
-					balance_list[currency][`${to_currency}_value`] *= result
+				promise = convert(exchange, pair, balance_list[currency][`${to_currency}_value`]).then(result => {
+					balance_list[currency][`${to_currency}_value`] = result
 				})
+				balance_list[currency][`to_${to_currency}_pairs`].push(pair)
 				promises.push(promise)
 			} else {
 				// Change through intermediate currency
@@ -59,6 +59,12 @@ function list(exchange, key, secret, to_currency) {
 		})
 
 		return Promise.all(promises).then(() => { return balance_list })
+	})
+}
+
+function convert(exchange, pair, current_value) {
+	return ticker.last_value(exchange, pair).then(result => {
+		return current_value *= result
 	})
 }
 
