@@ -24,41 +24,41 @@ function list(exchange, key, secret, to_currency) {
 			if(currency === to_currency) return
 
 			// e.g. from: BTC to: USDT, pair: BTC_USDT
-			convert_promise = convert_entry(exchange, pair_list, currency, currency, to_currency, balance_list)
-			if (convert_promise) {
-				promises.push(convert_promise)
+			pair = find_pair(pair_list, currency, to_currency)
+			if (pair) {
+				promises.push(convert_entry(exchange, pair, currency, balance_list))
 				return
 			}
 
 			// e.g. from: USDT to: BTC, pair: BTC_USDT
-			convert_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list, false)
-			if (convert_promise) {
-				promises.push(convert_promise)
+			pair = find_pair(pair_list, to_currency, currency)
+			if (pair) {
+				promises.push(convert_entry(exchange, pair, currency, balance_list, false))
 				return
 			}
-			
+
 			// e.g. from: XVG to: USDT, pairs: XVG_BTC, BTC_USDT
 			intermediate_currency = 'BTC'
-			intermediate_promise = convert_entry(exchange, pair_list, currency, currency, intermediate_currency, balance_list)
-			if (!intermediate_promise) {
-				console.log(`No pairs found to change from ${currency} to ${to_currency}`)
-				delete balance_list[currency]['value']
-				delete balance_list[currency]['conversion_pairs']
+			intermediate_pair = find_pair(pair_list, currency, intermediate_currency)
+			pair = find_pair(pair_list, intermediate_currency, to_currency)
+			if (intermediate_pair && pair) {
+				promises.push(convert_entry(exchange, intermediate_pair, currency, balance_list))
+				promises.push(convert_entry(exchange, pair, currency, balance_list))
 				return
 			}
-			promises.push(intermediate_promise)
 
-			convert_promise = convert_entry(exchange, pair_list, currency, intermediate_currency, to_currency, balance_list)
-			promises.push(convert_promise)
+			console.log(`No pairs found to change from ${currency} to ${to_currency}`)
+			delete balance_list[currency]['value']
+			delete balance_list[currency]['conversion_pairs']
 		})
 
 		return Promise.all(promises).then(() => { return balance_list })
 	})
 }
 
-function convert_entry(exchange, pair_list, start_currency, from_currency, to_currency, balance_list, direction = true) {
-	pair = find_pair(pair_list, from_currency, to_currency)
-	if (pair) {
+function convert_entry(exchange, pair, start_currency, balance_list, direction = true) {
+	// pair = find_pair(pair_list, from_currency, to_currency)
+	// if (pair) {
 		promise = convert(exchange, pair).then(result => {
 			if (direction) {
 				return balance_list[start_currency]['value'] *= result
@@ -68,7 +68,7 @@ function convert_entry(exchange, pair_list, start_currency, from_currency, to_cu
 		})
 		balance_list[start_currency]['conversion_pairs'].push(pair)
 		return promise
-	}
+	// }
 }
 
 function convert(exchange, pair) {
