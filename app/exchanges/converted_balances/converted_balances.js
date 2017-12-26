@@ -27,6 +27,18 @@ function list(exchange, key, secret, to_currency) {
 			if (convert_promise) {
 				promises.push(convert_promise)
 			} else {
+				// Check if we can change the other way around (e.g. there's no USDT_BTC pair)
+				reverted_promise = convert_entry(exchange, pair_list, currency, to_currency, currency, balance_list)
+				if (reverted_promise) {
+					convert_promise = reverted_promise.then(result => {
+						conversion_rate = balance_list[currency]['balance'] / result
+						balance_list[currency]['value'] = balance_list[currency]['balance'] * conversion_rate
+					})
+					promises.push(convert_promise)
+					return
+				}
+				
+
 				// Change through intermediate currency
 				intermediate_currency = 'BTC'
 
@@ -54,7 +66,7 @@ function convert_entry(exchange, pair_list, start_currency, from_currency, to_cu
 	pair = find_pair(pair_list, from_currency, to_currency)
 	if (pair) {
 		promise = convert(exchange, pair).then(result => {
-			balance_list[start_currency]['value'] *= result
+			return balance_list[start_currency]['value'] *= result
 		})
 		balance_list[start_currency]['conversion_pairs'].push(pair)
 		return promise
