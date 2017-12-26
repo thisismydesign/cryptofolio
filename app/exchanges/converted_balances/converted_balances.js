@@ -32,20 +32,13 @@ function list(exchange, key, secret, to_currency) {
 }
 
 function convert_entry(exchange, pair, start_currency, balance_list, direction = true) {
-	promise = convert(exchange, pair).then(result => {
+	balance_list[start_currency]['conversion_pairs'].push(pair)
+	return ticker.last_value(exchange, pair).then(result => {
 		if (direction) {
 			return balance_list[start_currency]['value'] *= result
 		} else {
 			return balance_list[start_currency]['value'] /= result
 		}
-	})
-	balance_list[start_currency]['conversion_pairs'].push(pair)
-	return promise
-}
-
-function convert(exchange, pair) {
-	return ticker.last_value(exchange, pair).then(result => {
-		return result
 	})
 }
 
