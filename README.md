@@ -1,9 +1,32 @@
 # cryptofolio
 
-Do this:
-
 - `npm install`
+- `npm test`
 - `npm start`
+
+## API
+
+`npm test | grep -A 1 GET`
+
+```
+      GET /:name/assets
+        ✓ responds with a list of assets for given exchange
+--
+      GET /:name/balances/:key/:secret
+        ✓ responds with a list of balances for given exchange user
+--
+      GET /:name/balances/:key/:secret/:currency
+        ✓ responds with a list of balances for given exchange user including value conversion pairs for desired currency
+--
+      GET /
+        ✓ responds with a list of exchanges
+--
+      GET /:name/pairs
+        ✓ responds with a list of pairs for given exchange
+--
+      GET /:name/ticker/:pair
+        ✓ responds with the ticker for given pair
+```
 
 ## JS framework for dummies
 
