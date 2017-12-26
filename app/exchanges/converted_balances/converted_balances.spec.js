@@ -16,7 +16,8 @@ describe('converted_balances module', () => {
 				ticker_value = {"BTC_USDT" : {"last": 13669.00000004}}
 				pair_list = [`BTC_${target_currency}`, `LTC_${target_currency}`]
 
-				expected_balance_list = balance_list
+				// Fastest way to deep clone, lol: https://stackoverflow.com/a/5344074/2771889
+				expected_balance_list = JSON.parse(JSON.stringify(balance_list))
 				expected_balance_list['BTC'][`to_${target_currency}_pair`] = `BTC_${target_currency}`
 				expected_balance_list['BTC'][`${target_currency}_value`] = ticker_value[`BTC_${target_currency}`]['last']
 
