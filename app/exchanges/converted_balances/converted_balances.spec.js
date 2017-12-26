@@ -12,14 +12,15 @@ describe('converted_balances module', () => {
 		describe('GET /:name/balances/:key/:secret/:currency', () => {
 			before(() => {
 				target_currency = 'USDT'
-				balance_list = {"BTC": {"balance": 2}}
-				ticker_value = {"BTC_USDT" : {"last": 1000}}
-				pair_list = [`BTC_${target_currency}`, `LTC_${target_currency}`]
+				balance_list = {"BTC": {"balance": 2}, "XVG": {"balance": 100}}
+				pair_list = [`BTC_${target_currency}`, 'XVG_BTC']
 
 				// Fastest way to deep clone, lol: https://stackoverflow.com/a/5344074/2771889
 				expected_balance_list = JSON.parse(JSON.stringify(balance_list))
-				expected_balance_list['BTC'][`to_${target_currency}_pair`] = `BTC_${target_currency}`
+				expected_balance_list['BTC'][`to_${target_currency}_pairs`] = [`BTC_${target_currency}`]
 				expected_balance_list['BTC'][`${target_currency}_value`] = 2000
+				expected_balance_list['XVG'][`to_${target_currency}_pairs`] = [`XVG_BTC`, `BTC_${target_currency}`]
+				expected_balance_list['XVG'][`${target_currency}_value`] = 1
 
 				app = require('supertest').agent(require('../../../app'))
 
@@ -34,17 +35,22 @@ describe('converted_balances module', () => {
 				    	resolve(pair_list)
 				    })
 				})
-				sandbox.stub(crypto_exchange_wrapper, 'ticker').callsFake(() =>  {
-					return new Promise((resolve, reject) => {
-				    	resolve(ticker_value)
+				sandbox.stub(crypto_exchange_wrapper, 'ticker').withArgs('bittrex', 'BTC_USDT').returns(
+					new Promise((resolve, reject) => {
+				    	resolve({"BTC_USDT" : {"last": 1000}})
 				    })
-				})
+				).withArgs('bittrex', 'XVG_BTC').returns(
+					new Promise((resolve, reject) => {
+				    	resolve({"XVG_BTC" : {"last": 0.00001}})
+				    })
+				)
 			})
 
 			after(() => {
 				sandbox.restore()
 			})
 
+			// TODO: separate cases, add case for same exchange value, from USDT ot BTC
 			it('responds with a list of balances for given exchange user including value and ticker of desired currency', function(done) {
 				app.get(`/api/exchanges/bittrex/balances/abc/123/${target_currency}`)
 		        	.expect(200, function (err, res) {
