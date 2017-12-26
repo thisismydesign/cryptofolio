@@ -17,42 +17,30 @@ function list(exchange, key, secret, to_currency) {
 		promises = []
 
 		Object.keys(balance_list).map(function(currency, index) {
-			balance_list[currency][`to_${to_currency}_pairs`] = []
-			balance_list[currency][`${to_currency}_value`] = balance_list[currency]['balance']
+			balance_list[currency]['conversion_pairs'] = []
+			balance_list[currency]['value'] = balance_list[currency]['balance']
 
 			if(currency === to_currency) return
 
-			pair = find_pair(pair_list, currency, to_currency)
-			if (pair) {
-				promise = convert(exchange, pair, balance_list[currency][`${to_currency}_value`]).then(result => {
-					balance_list[currency][`${to_currency}_value`] = result
-				})
-				balance_list[currency][`to_${to_currency}_pairs`].push(pair)
-				promises.push(promise)
+			convert_promise = convert_entry(exchange, pair_list, currency, currency, to_currency, balance_list)
+
+			if (convert_promise) {
+				promises.push(convert_promise)
 			} else {
 				// Change through intermediate currency
 				intermediate_currency = 'BTC'
 
-				intermediate_pair = find_pair(pair_list, currency, intermediate_currency)
-				if (!intermediate_pair) {
+				intermediate_promise = convert_entry(exchange, pair_list, currency, currency, intermediate_currency, balance_list)
+
+				if (!intermediate_promise) {
 					console.log(`No pairs found to change from ${currency} to ${to_currency}`)
-					balance_list[currency][`${to_currency}_value`] = 0
+					balance_list[currency]['value'] = 0
 					return
 				}
-				balance_list[currency][`to_${to_currency}_pairs`].push(intermediate_pair)
-				intermediate_promise = ticker.last_value(exchange, intermediate_pair).then(result => {
-					balance_list[currency][`${to_currency}_value`] *= result
-				})
 				promises.push(intermediate_promise)
 
-
-				pair = find_pair(pair_list, intermediate_currency, to_currency)
-				balance_list[currency][`to_${to_currency}_pairs`].push(pair)
-
-				promise = ticker.last_value(exchange, pair).then(result => {
-					balance_list[currency][`${to_currency}_value`] *= result
-				})
-				promises.push(promise)
+				convert_promise = convert_entry(exchange, pair_list, currency, intermediate_currency, to_currency, balance_list)
+				promises.push(convert_promise)
 
 				console.log(`Cannot change from ${currency} to ${to_currency} directly, will do it through ${balance_list[currency][`to_${to_currency}_pairs`]}`)
 			}
@@ -62,9 +50,20 @@ function list(exchange, key, secret, to_currency) {
 	})
 }
 
-function convert(exchange, pair, current_value) {
+function convert_entry(exchange, pair_list, start_currency, from_currency, to_currency, balance_list) {
+	pair = find_pair(pair_list, from_currency, to_currency)
+	if (pair) {
+		promise = convert(exchange, pair).then(result => {
+			balance_list[start_currency]['value'] *= result
+		})
+		balance_list[start_currency]['conversion_pairs'].push(pair)
+		return promise
+	}
+}
+
+function convert(exchange, pair) {
 	return ticker.last_value(exchange, pair).then(result => {
-		return current_value *= result
+		return result
 	})
 }
 

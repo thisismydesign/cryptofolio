@@ -17,10 +17,10 @@ describe('converted_balances module', () => {
 
 				// Fastest way to deep clone, lol: https://stackoverflow.com/a/5344074/2771889
 				expected_balance_list = JSON.parse(JSON.stringify(balance_list))
-				expected_balance_list['BTC'][`to_${target_currency}_pairs`] = [`BTC_${target_currency}`]
-				expected_balance_list['BTC'][`${target_currency}_value`] = 2000
-				expected_balance_list['XVG'][`to_${target_currency}_pairs`] = [`XVG_BTC`, `BTC_${target_currency}`]
-				expected_balance_list['XVG'][`${target_currency}_value`] = 1
+				expected_balance_list['BTC']['conversion_pairs'] = [`BTC_${target_currency}`]
+				expected_balance_list['BTC']['value'] = 2000
+				expected_balance_list['XVG']['conversion_pairs'] = [`XVG_BTC`, `BTC_${target_currency}`]
+				expected_balance_list['XVG']['value'] = 1
 
 				app = require('supertest').agent(require('../../../app'))
 
