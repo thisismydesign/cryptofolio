@@ -8,6 +8,7 @@ const balances = require('./balances')
 const ticker = require('./ticker')
 const converted_balances = require('./converted_balances')
 const converted_sum = require('./converted_sum')
+const exchange_rate = require('./exchange_rate')
 
 router.get('/', function (req, res) {
   res.status(200).json(list())
@@ -18,6 +19,7 @@ router.use('/', balances.router)
 router.use('/', ticker.router)
 router.use('/', converted_balances.router)
 router.use('/', converted_sum.router)
+router.use('/', exchange_rate.router)
 
 function list() {
 	return crypto_exchange.exchanges()
