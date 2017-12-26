@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 
-const crypto_exchange_wrapper = require('../crypto_exchange_wrapper')
 const balances = require('../balances')
 const pairs = require('../pairs')
 const ticker = require('../ticker')
