@@ -7,5 +7,6 @@ module.exports = {
 	assets: crypto_exchange_wrapper.assets,
 	exchanges: crypto_exchange_wrapper.exchanges,
 	authenticate: crypto_exchange_wrapper.authenticate,
-	balances: crypto_exchange_wrapper.balances
+	balances: crypto_exchange_wrapper.balances,
+	ticker: crypto_exchange_wrapper.ticker
 }

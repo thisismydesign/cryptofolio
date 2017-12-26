@@ -19,6 +19,10 @@ function authenticate(exchange, key, secret) {
 	})
 }
 
+function ticker(exchange, pair) {
+	return crypto_exchange[exchange].ticker(pair)
+}
+
 function balances(authenticated_exchange) {
 	return authenticated_exchange.balances()
 }
@@ -28,5 +32,6 @@ module.exports = {
 	assets: assets,
 	exchanges: exchanges,
 	authenticate: authenticate,
-	balances: balances
+	balances: balances,
+	ticker: ticker
 }
