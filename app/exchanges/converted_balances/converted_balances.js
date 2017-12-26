@@ -22,8 +22,8 @@ function list(exchange, key, secret, to_currency) {
 				balance_list[currency]['conversion_pairs'] = []
 				balance_list[currency]['value'] = balance_list[currency]['balance']
 
-				conversion_pairs.forEach(pair => {
-					promises.push(convert_entry(exchange, pair[0], currency, balance_list, pair[1]))
+				conversion_pairs.forEach(([pair, direction]) => {
+					promises.push(convert_entry(exchange, pair, currency, balance_list, direction))
 				})
 			}
 		})
