@@ -6,6 +6,10 @@ const expect = require('chai').expect
 const crypto_exchange_wrapper = require('../crypto_exchange_wrapper')
 const converted_balances = require('./converted_balances')
 
+function deep_clone(obj) {
+	return JSON.parse(JSON.stringify(obj))
+}
+
 describe('converted_balances module', () => {
 	describe('router', () => {
 		it('exports a function', () => {
@@ -18,7 +22,7 @@ describe('converted_balances module', () => {
 				pair_list = [`BTC_${target_currency}`, 'XVG_BTC']
 
 				// Fastest way to deep clone, lol: https://stackoverflow.com/a/5344074/2771889
-				expected_balance_list = JSON.parse(JSON.stringify(balance_list))
+				expected_balance_list = deep_clone(balance_list)
 				expected_balance_list['BTC']['conversion_pairs'] = [`BTC_${target_currency}`]
 				expected_balance_list['BTC']['value'] = 2000
 				expected_balance_list['XVG']['conversion_pairs'] = [`XVG_BTC`, `BTC_${target_currency}`]
@@ -70,7 +74,7 @@ describe('converted_balances module', () => {
 	    			target_currency = 'BTC'
 	    			balance_list = {"USDT": {"balance": 3000}}
 
-	    			expected_balance_list = JSON.parse(JSON.stringify(balance_list))
+	    			expected_balance_list = deep_clone(balance_list)
 					expected_balance_list['USDT']['conversion_pairs'] = ['BTC_USDT']
 					expected_balance_list['USDT']['value'] = 3
 	    		})
@@ -93,7 +97,7 @@ describe('converted_balances module', () => {
 	    			target_currency = 'USDT'
 	    			balance_list = {"USDT": {"balance": 3000}}
 
-	    			expected_balance_list = JSON.parse(JSON.stringify(balance_list))
+	    			expected_balance_list = deep_clone(balance_list)
 					expected_balance_list['USDT']['conversion_pairs'] = []
 					expected_balance_list['USDT']['value'] = 3000
 	    		})
