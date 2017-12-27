@@ -5,22 +5,17 @@ const pairs = require('../pairs')
 const ticker = require('../ticker')
 
 router.get('/:name/exchange_rate/:from_currency/:to_currency', function(req, res) {
-	value(req.params.name, req.params.from_currency, req.params.to_currency).then(function(result) {
+	convert(req.params.name, req.params.from_currency, req.params.to_currency).then(function(result) {
 		res.status(200).json(result);
 	})
 })
 
-function value(exchange, from_currency, to_currency) {
+function convert(exchange, from_currency, to_currency) {
 	return pairs.list(exchange).then(pair_list => {
-		return convert(exchange, pair_list, from_currency, to_currency)
-	})
-}
-
-function convert(exchange, pair_list, from_currency, to_currency) {
-	conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
-	if(conversion_pairs) {
+		conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
+		if(!conversion_pairs) return
 		return cheapest(exchange, conversion_pairs).then(result => {return result})
-	}
+	})
 }
 
 function cheapest(exchange, possible_conversion_pairs) {

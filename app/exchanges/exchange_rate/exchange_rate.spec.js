@@ -150,7 +150,7 @@ describe('exchange_rate module', () => {
 					rates = [0.00003]
 	    		})
 
-	    		it('uses the balance as value', function(done) {
+	    		it('responds with empty body', function(done) {
 					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
 			        	.expect(200, function (err, res) {
 				        	if (err) {
