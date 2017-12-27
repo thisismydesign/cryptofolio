@@ -79,6 +79,27 @@ describe('exchange_rate module', () => {
     			})
 	    	})
 
+	    	describe('multi-step conversion with multiple options', () => {
+	    		before(() => {
+	    			from = 'XVG'
+	    			to = 'USDT'
+					pairs = [`${from}_BTC`, `BTC_${to}`, `${from}_LTC`, `LTC_${to}`, `${from}_ETH`, `ETH_${to}`]
+					rates = [0.00001, 1000, 1, 200, 0.00001, 5000]
+	    		})
+
+	    		it('will choose the cheapest one', function(done) {
+					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+			        	.expect(200, function (err, res) {
+				        	if (err) {
+				        		console.log(res)
+				        		throw(err)
+				        	}
+					        expect(res.body).to.eql(200)
+					        done()
+					      })
+    			})
+	    	})
+
 	    	describe('one way pair (e.g. looking for USDT_BTC but there is only BTC_USDT)', () => {
 	    		before(() => {
 	    			from = 'USDT'
