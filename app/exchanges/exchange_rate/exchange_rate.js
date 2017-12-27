@@ -10,12 +10,40 @@ router.get('/:name/exchange_rate/:from_currency/:to_currency', function(req, res
 	})
 })
 
+router.get('/:name/exchange_pairs/:from_currency/:to_currency', function(req, res) {
+	exchange_pairs(req.params.name, req.params.from_currency, req.params.to_currency).then(function(result) {
+		res.status(200).json(result);
+	})
+})
+
+function exchange_pairs(exchange, from_currency, to_currency) {
+	return pairs.list(exchange).then(pair_list => {
+		promises = []
+		possible_conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
+		possible_conversion_pairs.forEach((conversion_pairs, index) => {
+			promise = get_rate(exchange, conversion_pairs).then(rate => {
+				possible_conversion_pairs[index].push(rate)
+			})
+			promises.push(promise)
+		})
+		return Promise.all(promises).then(() => { return possible_conversion_pairs })
+	})
+}
+
 function convert(exchange, from_currency, to_currency) {
 	return pairs.list(exchange).then(pair_list => {
 		conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
 		if(!conversion_pairs) return
 		return cheapest(exchange, conversion_pairs).then(result => {return result})
 	})
+}
+
+function get_rate(exchange, conversion_pairs) {
+	promises = []
+	conversion_pairs.forEach(([pair, direction]) => {
+		promises.push(conversion_multiplier(exchange, pair, direction))
+	})
+	return Promise.all(promises).then(multipliers => { multipliers.push(1); return multipliers.reduce((a, b) => a * b) })
 }
 
 function cheapest(exchange, possible_conversion_pairs) {
