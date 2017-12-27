@@ -17,59 +17,33 @@ function value(exchange, from_currency, to_currency) {
 }
 
 function convert(exchange, pair_list, from_currency, to_currency) {
-	// let multiplier, promises = []
 	conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
-	// console.log(conversion_pairs)
 	if(conversion_pairs) {
-		// multiplier = 1
-		// console.log(conversion_pairs)
-		return cheapest(exchange, conversion_pairs).then(result => {console.log(`multiplier: ${result}`); return result})
-		
-		// conversion_pairs[0].forEach(([pair, direction]) => {
-		// 	promise = conversion_multiplier(exchange, pair, direction).then(result => {
-		// 		// console.log(result)
-		// 		multiplier *= result
-		// 	})
-		// 	promises.push(promise)
-		// })
+		return cheapest(exchange, conversion_pairs).then(result => {return result})
 	}
-	// return Promise.all(promises).then(() => { return multiplier })
 }
 
-// [ [ [ 'XVG_BTC', true ], [ 'BTC_USDT', true ] ] ]
-// [ [ 'XVG_BTC', true ], [ 'BTC_USDT', true ] ]
-// [ 'XVG_BTC', true ]
 function cheapest(exchange, possible_conversion_pairs) {
 	possible_promises = []
-	multipliers = Array(possible_conversion_pairs.length).fill(1)
-	// TODO: for some reason a single multiplier within the below callback would be accessed by all callbacks, hence the array
-	// TODO: promises should return value, multiply them in all call
 	possible_conversion_pairs.forEach((conversion_pairs, index) => {
 		promises = []
 		conversion_pairs.forEach(([pair, direction]) => {
-			promise = conversion_multiplier(exchange, pair, direction).then(result => {
-				multipliers[index] *= result
-				// parallel runs share instance of multipliers
-				
-			})
-			promises.push(promise)
+			promises.push(conversion_multiplier(exchange, pair, direction))
 		})
-		possible_promises.push(Promise.all(promises).then(() => { return multipliers[index] }))
+		possible_promises.push(Promise.all(promises).then(multipliers => { multipliers.push(1); return multipliers.reduce((a, b) => a * b) }))
 	})
-	return Promise.all(possible_promises).then((result) => { return max(result) })
+	return Promise.all(possible_promises).then((multipliers) => { return max(multipliers) })
 }
 
 function max(arr) {
-	return arr.reduce(function(a, b) { return Math.max(a, b) })
+	return arr.reduce((a, b) => { return Math.max(a, b) })
 }
 
 function conversion_multiplier(exchange, pair, direction) {
 	return ticker.last_value(exchange, pair).then(result => {
 		if (direction) {
-			console.log(`multiplier: ${result} for: ${pair}`)
 			return result
 		} else {
-			console.log(`multiplier: ${result} for: ${pair}`)
 			return 1 / result
 		}
 	})
@@ -94,11 +68,6 @@ function find_conversion_pairs(pairs, from_currency, to_currency) {
 	multiple_pairs.forEach(([from_pair, to_pair], index) => {
 		multiple_pairs[index] = [[from_pair, true], [to_pair, true]]
 	})
-
-	// intermediate_pair = find_pair(pairs, from_currency, intermediate_currency)
-	// pair = find_pair(pairs, intermediate_currency, to_currency)
-	// if (intermediate_pair && pair) return [[intermediate_pair, true], [pair, true]]
-
 	if (multiple_pairs.length > 0) return multiple_pairs
 
 	console.log(`No pairs found to change from ${from_currency} to ${to_currency}`)
