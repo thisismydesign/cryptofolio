@@ -20,6 +20,7 @@ function exchange_pairs(exchange, from_currency, to_currency) {
 	return pairs.list(exchange).then(pair_list => {
 		promises = []
 		possible_conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
+		if(!possible_conversion_pairs) return
 		possible_conversion_pairs.forEach((conversion_pairs, index) => {
 			promise = get_rate(exchange, conversion_pairs).then(rate => {
 				possible_conversion_pairs[index].push(rate)
