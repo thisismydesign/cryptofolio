@@ -16,7 +16,7 @@ function list(exchange, key, secret, to_currency) {
 		promises = []
 
 		Object.keys(balance_list).map(function(currency, index) {
-			promise = exchange_rate.convert(exchange, pair_list, currency, to_currency).then(multiplier => {
+			promise = exchange_rate.convert(exchange, currency, to_currency).then(multiplier => {
 				balance_list[currency]['value'] = balance_list[currency]['balance'] * multiplier
 			})
 			promises.push(promise)

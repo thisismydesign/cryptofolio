@@ -40,11 +40,13 @@ describe('converted_balances module', () => {
 				    	resolve(pair_list)
 				    })
 				)
-				sandbox.stub(exchange_rate, 'convert').returns(
+				exchange_rate_stub = sandbox.stub(exchange_rate, 'convert')
+				Object.keys(balance_list).forEach(key => {
+					exchange_rate_stub.withArgs('bittrex', key, target_currency).returns(
 					new Promise((resolve, reject) => {
 					    	resolve(2)
-			    	})
-		    	)
+			    	}))
+				})
 			})
 
 			after(() => {
