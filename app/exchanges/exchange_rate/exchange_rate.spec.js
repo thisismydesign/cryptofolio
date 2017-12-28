@@ -12,7 +12,7 @@ describe('exchange_rate module', () => {
 		it('exports a function', () => {
 			expect(exchange_rate.router).to.be.a('function')
 		})
-		describe('GET /:name/exchange_rate/:from_currency/:to_currency', () => {
+		describe('REST API', () => {
 			beforeEach(() => {
 				app = require('supertest').agent(require('../../../app'))
 
@@ -37,131 +37,159 @@ describe('exchange_rate module', () => {
 				sandbox.restore()
 			})
 
-			describe('single-step conversion', () => {
-				before(() => {
-					from = 'BTC'
-	    			to = 'USDT'
-					pairs = [`${from}_${to}`]
-					rates = [1000]
+			describe('GET /:name/exchange_rate/:from_currency/:to_currency', () => {
+				describe('single-step conversion', () => {
+					before(() => {
+						from = 'BTC'
+		    			to = 'USDT'
+						pairs = [`${from}_${to}`]
+						rates = [1000]
+					})
+
+					it('responds with the exchange rate between the two currencies', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.eql(1000)
+						        done()
+						      })
+			    	})
 				})
 
-				it('responds with the exchange rate between the two currencies', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
-			        	.expect(200, function (err, res) {
-				        	if (err) {
-				        		console.log(res)
-				        		throw(err)
-				        	}
-					        expect(res.body).to.eql(1000)
-					        done()
-					      })
+		    	describe('multi-step conversion', () => {
+		    		before(() => {
+		    			from = 'XVG'
+		    			to = 'USDT'
+						pairs = [`${from}_BTC`, `BTC_${to}`]
+						rates = [0.00001, 1000]
+		    		})
+
+		    		it('multiplies exchange rates of intermediate pairs', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.eql(0.01)
+						        done()
+						      })
+	    			})
 		    	})
-			})
 
-	    	describe('multi-step conversion', () => {
-	    		before(() => {
-	    			from = 'XVG'
-	    			to = 'USDT'
-					pairs = [`${from}_BTC`, `BTC_${to}`]
-					rates = [0.00001, 1000]
-	    		})
+		    	describe('multi-step conversion with multiple options', () => {
+		    		before(() => {
+		    			from = 'XVG'
+		    			to = 'USDT'
+						pairs = [`${from}_BTC`, `BTC_${to}`, `${from}_LTC`, `LTC_${to}`, `${from}_ETH`, `ETH_${to}`]
+						rates = [0.00001, 1000, 1, 200, 0.00001, 5000]
+		    		})
 
-	    		it('multiplies exchange rates of intermediate pairs', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
-			        	.expect(200, function (err, res) {
-				        	if (err) {
-				        		console.log(res)
-				        		throw(err)
-				        	}
-					        expect(res.body).to.eql(0.01)
-					        done()
-					      })
-    			})
+		    		it('will choose the cheapest one', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.eql(200)
+						        done()
+						      })
+	    			})
+		    	})
+
+		    	describe('one way pair (e.g. looking for USDT_BTC but there is only BTC_USDT)', () => {
+		    		before(() => {
+		    			from = 'USDT'
+		    			to = 'BTC'
+		    			pairs = [`${to}_${from}`]
+						rates = [1000]
+		    		})
+
+		    		it('reverts the existing pair', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.eql(0.001)
+						        done()
+						      })
+	    			})
+		    	})
+
+		    	describe('no conversion needed (e.g. USDT_USDT)', () => {
+		    		before(() => {
+		    			from = 'USDT'
+		    			to = 'USDT'
+		    			pairs = []
+						rates = []
+		    		})
+
+		    		it('responds with 1', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.eql(1)
+						        done()
+						      })
+	    			})
+		    	})
+
+		    	describe('no conversion possible (e.g. GRS_USDT with no intermediate pair)', () => {
+		    		before(() => {
+		    			from = 'GRS'
+		    			to = 'USDT'
+		    			pairs = [`BTC_${to}`]
+						rates = [0.00003]
+		    		})
+
+		    		it('responds with empty body', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.be.empty
+						        done()
+						      })
+	    			})
+		    	})
 	    	})
 
-	    	describe('multi-step conversion with multiple options', () => {
+			describe('GET /:name/exchange_pairs/:from_currency/:to_currency', () => {
 	    		before(() => {
 	    			from = 'XVG'
 	    			to = 'USDT'
+	    			// TODO: should create input vs output in a nicer way
 					pairs = [`${from}_BTC`, `BTC_${to}`, `${from}_LTC`, `LTC_${to}`, `${from}_ETH`, `ETH_${to}`]
 					rates = [0.00001, 1000, 1, 200, 0.00001, 5000]
-	    		})
 
-	    		it('will choose the cheapest one', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
-			        	.expect(200, function (err, res) {
-				        	if (err) {
-				        		console.log(res)
-				        		throw(err)
-				        	}
-					        expect(res.body).to.eql(200)
-					        done()
-					      })
-    			})
-	    	})
-
-	    	describe('one way pair (e.g. looking for USDT_BTC but there is only BTC_USDT)', () => {
-	    		before(() => {
-	    			from = 'USDT'
-	    			to = 'BTC'
-	    			pairs = [`${to}_${from}`]
-					rates = [1000]
-	    		})
-
-	    		it('reverts the existing pair', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
-			        	.expect(200, function (err, res) {
-				        	if (err) {
-				        		console.log(res)
-				        		throw(err)
-				        	}
-					        expect(res.body).to.eql(0.001)
-					        done()
-					      })
-    			})
-	    	})
-
-	    	describe('no conversion needed (e.g. USDT_USDT)', () => {
-	    		before(() => {
-	    			from = 'USDT'
-	    			to = 'USDT'
-	    			pairs = []
-					rates = []
-	    		})
-
-	    		it('responds with 1', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
-			        	.expect(200, function (err, res) {
-				        	if (err) {
-				        		console.log(res)
-				        		throw(err)
-				        	}
-					        expect(res.body).to.eql(1)
-					        done()
-					      })
-    			})
-	    	})
-
-	    	describe('no conversion possible (e.g. GRS_USDT with no intermediate pair)', () => {
-	    		before(() => {
-	    			from = 'GRS'
-	    			to = 'USDT'
-	    			pairs = [`BTC_${to}`]
-					rates = [0.00003]
+					response = [[[pairs[0], true], [pairs[1], true], rates[0]*rates[1]],
+					[[pairs[2], true], [pairs[3], true], rates[2]*rates[3]],
+					[[pairs[4], true], [pairs[5], true], rates[4]*rates[5]]]
 	    		})
 
 	    		it('responds with empty body', function(done) {
-					app.get(`/api/exchanges/bittrex/exchange_rate/${from}/${to}`)
+					app.get(`/api/exchanges/bittrex/exchange_pairs/${from}/${to}`)
 			        	.expect(200, function (err, res) {
 				        	if (err) {
 				        		console.log(res)
 				        		throw(err)
 				        	}
-					        expect(res.body).to.be.empty
+					        expect(res.body).to.eql(response)
 					        done()
 					      })
     			})
-	    	})
+			})
 		})
 	})
 })
