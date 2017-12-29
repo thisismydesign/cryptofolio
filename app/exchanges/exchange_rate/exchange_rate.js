@@ -32,10 +32,11 @@ function exchange_pairs(exchange, from_currency, to_currency) {
 }
 
 function convert(exchange, from_currency, to_currency) {
-	return pairs.list(exchange).then(pair_list => {
-		conversion_pairs = find_conversion_pairs(pair_list, from_currency, to_currency)
+	return exchange_pairs(exchange, from_currency, to_currency).then(conversion_pairs => {
 		if(!conversion_pairs) return
-		return cheapest(exchange, conversion_pairs).then(result => {return result})
+		flat_data = [].concat.apply([], conversion_pairs)
+		multipliers = flat_data.filter(value => !isNaN(value))
+		return max(multipliers)
 	})
 }
 
@@ -45,18 +46,6 @@ function get_rate(exchange, conversion_pairs) {
 		promises.push(conversion_multiplier(exchange, pair, direction))
 	})
 	return Promise.all(promises).then(multipliers => { multipliers.push(1); return multipliers.reduce((a, b) => a * b) })
-}
-
-function cheapest(exchange, possible_conversion_pairs) {
-	possible_promises = []
-	possible_conversion_pairs.forEach((conversion_pairs, index) => {
-		promises = []
-		conversion_pairs.forEach(([pair, direction]) => {
-			promises.push(conversion_multiplier(exchange, pair, direction))
-		})
-		possible_promises.push(Promise.all(promises).then(multipliers => { multipliers.push(1); return multipliers.reduce((a, b) => a * b) }))
-	})
-	return Promise.all(possible_promises).then((multipliers) => { return max(multipliers) })
 }
 
 function max(arr) {
