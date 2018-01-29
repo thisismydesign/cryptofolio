@@ -1,4 +1,4 @@
-# cryptofolio
+# Cryptofolio
 
 REST API service to query currency and account data on Cryptocurrency Exchanges using the [`crypto-exchange`](https://www.npmjs.com/package/crypto-exchange) npm package.
 
