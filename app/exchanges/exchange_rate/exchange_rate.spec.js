@@ -178,7 +178,7 @@ describe('exchange_rate module', () => {
 					[[pairs[4], true], [pairs[5], true], rates[4]*rates[5]]]
 	    		})
 
-	    		it('responds with empty body', function(done) {
+	    		it('responds with a list of exchange pairs and their final multiplier', function(done) {
 					app.get(`/api/exchanges/bittrex/exchange_pairs/${from}/${to}`)
 			        	.expect(200, function (err, res) {
 				        	if (err) {
@@ -189,6 +189,27 @@ describe('exchange_rate module', () => {
 					        done()
 					      })
     			})
+
+    			describe('no conversion possible (e.g. GRS_USDT with no intermediate pair)', () => {
+		    		before(() => {
+		    			from = 'GRS'
+		    			to = 'USDT'
+		    			pairs = [`BTC_${to}`]
+						rates = [0.00003]
+		    		})
+
+		    		it('responds with empty body', function(done) {
+						app.get(`/api/exchanges/bittrex/exchange_pairs/${from}/${to}`)
+				        	.expect(200, function (err, res) {
+					        	if (err) {
+					        		console.log(res)
+					        		throw(err)
+					        	}
+						        expect(res.body).to.be.empty
+						        done()
+						      })
+	    			})
+		    	})
 			})
 		})
 	})
