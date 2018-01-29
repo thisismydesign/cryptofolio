@@ -178,7 +178,7 @@ describe('exchange_rate module', () => {
 					[[pairs[4], true], [pairs[5], true], rates[4]*rates[5]]]
 	    		})
 
-	    		it('responds with a list of exchange pairs and their final multiplier', function(done) {
+	    		it('responds with a list of exchange pairs and their exchange multiplier', function(done) {
 					app.get(`/api/exchanges/bittrex/exchange_pairs/${from}/${to}`)
 			        	.expect(200, function (err, res) {
 				        	if (err) {
