@@ -55,14 +55,19 @@ GET /:name/balances/:key/:secret/:currency/sum
 - [Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction): CI, deployment and operation
 
 #### Creating the project
-- Genrate project: http://expressjs.com/en/starter/generator.html
+- [Genrate project skeleton](http://expressjs.com/en/starter/generator.html)
 - Initialize repo
-- Add gitignore: https://github.com/github/gitignore/blob/master/Node.gitignore
+- [Add gitignore](https://github.com/github/gitignore/blob/master/Node.gitignore)
 - Add README
 - Run `npm install`
 
 #### Structuring the project
-- There's no consensus (e.g. [1](https://www.infoworld.com/article/3204205/node-js/7-keys-to-structuring-your-nodejs-app.html), [2](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/)) but it doesn't matter from the framework point of view. I've decided to structure the project as described [here](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/). The main idea (similar to [Angular's generator](https://github.com/angular/angular-cli#generating-components-directives-pipes-and-services)) is to organize around features, not roles. Additionally I will store the business logic in an `app` folder.
+- The [Express generator](http://expressjs.com/en/starter/generator.html) creates a familiar skeleton
+- There's [no consensus](https://stackoverflow.com/a/47945694/2771889) on the right structure (e.g. [1](https://www.infoworld.com/article/3204205/node-js/7-keys-to-structuring-your-nodejs-app.html), [2](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/)) but it doesn't matter from the framework's point of view.
+- The project is structured as described [here](https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/). The main idea is similar to [Angular's generator](https://github.com/angular/angular-cli#generating-components-directives-pipes-and-services): organize around features, not roles.
+- Additionally
+  - business logic is stored in an `app` folder
+  - the `routes` folder is removed from the project root and instead routes are defined in their corresponding components
 
 #### Technical notes
 - In order for `sinon` stubbing to work the stubbed method cannot be used in the same module. In other words stubbing a module endpoint will only stub the module endpoint and not the internal usage of the method referenced upon `module.exports`. See more [here](https://stackoverflow.com/a/47949094/2771889).
