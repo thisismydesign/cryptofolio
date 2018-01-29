@@ -2,7 +2,7 @@
 
 REST API service to query currency and account data on Cryptocurrency Exchanges using the [`crypto-exchange`](https://www.npmjs.com/package/crypto-exchange) npm package.
 
-*__I no longer maintain this project.__ It was made in an attempt to practice JS based frameworks. Find gettings started guides, best practices and lessons learned [below](#js-framework-for-dummies).*
+*__I no longer maintain this project.__ It was made in an attempt to practice JS based frameworks. Find getting started guides, best practices and lessons learned [below](#js-framework-for-dummies).*
 
 ## Features
 
@@ -18,32 +18,32 @@ REST API service to query currency and account data on Cryptocurrency Exchanges 
 
 ### API
 
-`npm test | grep -A 1 GET` and possible manual entries marked with `+`
+`npm test | grep -A 1 GET` and possible manual entries marked with `x`
 
 ```
-      GET /:name/assets
-        ✓ responds with a list of assets for given exchange
---
-      GET /:name/balances/:key/:secret
-        ✓ responds with a list of balances for given exchange user
---
-      GET /:name/balances/:key/:secret/:currency
-        ✓ responds with a list of balances for given exchange user including conversion pairs for and value in desired currency
---
-      GET /:name/exchange_pairs/:from_currency/:to_currency
-        ✓ responds with a list of exchange pairs and their exchange multiplier
---
-      GET /
-        ✓ responds with a list of exchanges
---
-      GET /:name/pairs
-        ✓ responds with a list of pairs for given exchange
---
-      GET /:name/ticker/:pair
-        ✓ responds with the ticker for given pair
---
-      GET /:name/balances/:key/:secret/:currency/sum
-        x responds with balance sum in desired currency
+GET /:name/assets
+  ✓ responds with a list of assets for given exchange
+
+GET /:name/balances/:key/:secret
+  ✓ responds with a list of balances for given exchange user
+
+GET /:name/balances/:key/:secret/:currency
+  ✓ responds with a list of balances for given exchange user including conversion pairs for and value in desired currency
+
+GET /:name/exchange_pairs/:from_currency/:to_currency
+  ✓ responds with a list of exchange pairs and their exchange multiplier
+
+GET /
+  ✓ responds with a list of exchanges
+
+GET /:name/pairs
+  ✓ responds with a list of pairs for given exchange
+
+GET /:name/ticker/:pair
+  ✓ responds with the ticker for given pair
+
+GET /:name/balances/:key/:secret/:currency/sum
+  x responds with balance sum in desired currency
 ```
 
 ## JS framework for dummies
