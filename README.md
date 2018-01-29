@@ -46,7 +46,7 @@ GET /:name/balances/:key/:secret/:currency/sum
   x responds with balance sum in desired currency
 ```
 
-## JS framework for dummies
+## JavaScript stack for dummies
 
 - [Node.js](https://nodejs.org/en/): JavaScript framework
 - [Express](http://expressjs.com/): Node.js web framework
