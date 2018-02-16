@@ -1,8 +1,8 @@
 # Cryptofolio
 
-REST API service to query currency and account data on Cryptocurrency Exchanges using the [`crypto-exchange`](https://www.npmjs.com/package/crypto-exchange) npm package.
+REST service to query currency and account data on Cryptocurrency Exchanges using the [`crypto-exchange`](https://www.npmjs.com/package/crypto-exchange) npm package.
 
-*__I no longer maintain this project.__ It was made in an attempt to practice JS based frameworks. Find getting started guides, best practices and lessons learned [below](#js-framework-for-dummies).*
+*__I no longer maintain this project.__ It was made in an attempt to practice JS based frameworks. Find getting started guides, best practices and lessons learned [below](#javascript-stack-for-dummies).*
 
 ## Features
 
