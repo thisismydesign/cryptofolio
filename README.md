@@ -54,6 +54,7 @@ GET /:name/balances/:key/:secret/:currency/sum
 - [MEAN](http://mean.io/): Said to be a framework but really is just a recommended JavaScript software bundle
 - [Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction): CI, deployment and operation
 - See `devDependencies` in [package.json](package.json) for useful libs
+<!-- space fix -->
 
 - [React](https://reactjs.org/): Frontend framework
 - [Redux](https://redux.js.org/): State container
