@@ -55,6 +55,11 @@ GET /:name/balances/:key/:secret/:currency/sum
 - [Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction): CI, deployment and operation
 - See `devDependencies` in [package.json](package.json) for useful libs
 
+- [React](https://reactjs.org/): Frontend framework
+- [Redux](https://redux.js.org/): State container
+- [Atomic design](http://bradfrost.com/blog/post/atomic-web-design/): set of design principles
+- [Flow](https://flow.org/): Static type checker
+
 #### Creating the project
 - [Genrate project skeleton](http://expressjs.com/en/starter/generator.html)
 - Initialize repo
